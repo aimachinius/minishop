@@ -62,12 +62,14 @@ def order_detail(request, order_id):
 @login_required
 def order_list(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
-
-    product_ids = OrderItem.objects.filter(order__in=orders).values_list('product_id', flat=True)
-
-    reviewed_product_ids = list(
-        Review.objects.filter(user=request.user,product_id__in=product_ids).values_list('product_id', flat=True)
-    )  
+    reviewed_product_data = Review.objects.filter(
+        user=request.user,
+        order__in=orders
+    ).values_list('product_id', 'order_id')
+    reviewed_product_ids = {
+        f"{product_id}_{order_id}" for product_id, order_id in reviewed_product_data
+    }
+    oders = orders.prefetch_related('items')
     return render(request, 'orders/order/list.html', 
             {'orders': orders,
              'reviewed_product_ids': reviewed_product_ids

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load filter %}
 {% block title %}Đơn hàng của tôi - MiniShop{% endblock %}
 
 {% block content %}
@@ -32,10 +32,11 @@
                                     <small class="me-2">{{ item.product.name }}- Số lượng : {{ item.quantity }}</small>
 
                                     {% if order.status == "delivered" %}
-                                    {% if item.product.id in reviewed_product_ids %}
+                                    {% check_reviewed reviewed_product_ids item.product.id order.id as check %}
+                                    {% if check %}
                                     <span class="badge bg-success">Đã đánh giá</span>
                                     {% else %}
-                                    <a href="{% url 'review:add_review' item.product.id %}"
+                                    <a href="{% url 'review:add_review' item.product.id order.id %}"
                                         class="btn btn-sm btn-outline-success">
                                         Đánh giá
                                     </a>

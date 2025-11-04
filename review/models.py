@@ -19,7 +19,7 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        unique_together = ('product', 'user')
+        unique_together = ('product', 'user','order')
         verbose_name = "Đánh giá"
         verbose_name_plural = "Đánh giá"
     

@@ -5,6 +5,13 @@ from .models import Order, OrderItem
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     raw_id_fields = ['product']
+    def has_add_permission(self, request, obj):
+        return False
+    def has_change_permission(self, request, obj=None):
+        return False
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
 
 
 @admin.register(Order)
@@ -28,3 +35,6 @@ class OrderAdmin(admin.ModelAdmin):
         if obj:  # đang edit
             return [f.name for f in self.model._meta.fields if f.name != 'status']
         return []  # khi tạo mới, tất cả editable
+    def has_delete_permission(self, request, obj=None):
+        return False
+    

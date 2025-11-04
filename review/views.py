@@ -8,17 +8,17 @@ from products.models import Product
 from orders.models import Order
 # Create your views here.
 @login_required
-def add_review(request, product_id):
-    product = get_object_or_404(Product,id=product_id)
-    orders = Order.objects.filter(user=request.user, items__product=product).first()
-    if Review.objects.filter(product=product, user=request.user,order = orders).exists():
+def add_review(request, product_id,order_id):
+    products = get_object_or_404(Product,id=product_id)
+    orders = get_object_or_404(Order,id=order_id,user=request.user)
+    if Review.objects.filter(product=products, user=request.user,order = orders).exists():
         messages.info(request, "Bạn đã đánh giá sản phẩm này rồi.")
-        return redirect('products:product_detail', id=product.id, slug=product.slug)
+        return redirect('products:product_detail', id=products.id, slug=products.slug)
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
             review = form.save(commit=False)
-            review.product = product
+            review.product = products
             review.user = request.user
             review.order = orders
             review.save()
@@ -28,5 +28,5 @@ def add_review(request, product_id):
         form = ReviewForm()
     return render(request, 'products/review_form.html',
             {'form':form,
-            'product':product
+            'product':products
             })
