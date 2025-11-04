@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Category, Product, Review
-
+from .models import Category, Product
+from review.models import Review
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -13,9 +13,16 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class ReviewInline(admin.TabularInline):
     model = Review
-    extra = 0
+    extra = 0 # khong cho admin tao form moi de them review 
     readonly_fields = ['user', 'rating', 'comment', 'created_at']
+    def has_add_permission(self, request, obj=None):
+        return False
 
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -31,20 +38,7 @@ class ProductAdmin(admin.ModelAdmin):
             return format_html('<img src="{}" style="width: 50px; height: 50px;" />', obj.image.url)
         return "Không có hình"
     image_tag.short_description = 'Hình ảnh'
+    def has_delete_permission(self, request, obj = ...):
+        return super().has_delete_permission(request, obj)
 
 
-@admin.register(Review)
-class ReviewAdmin(admin.ModelAdmin):
-    list_display = ['product', 'user', 'rating', 'created_at']
-    list_filter = ['rating', 'created_at']
-    search_fields = ['product__name', 'user__username']
-    readonly_fields = ['created_at']
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False

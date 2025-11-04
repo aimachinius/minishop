@@ -15,17 +15,19 @@ def cart_add(request, product_id):
         cd = form.cleaned_data
         cart.add(product=product,
                 quantity=cd['quantity'],
-                override_quantity=cd['override'])
+                # override_quantity=cd['override'])
+                override_quantity=False) # false -> tang gia tri
     return redirect('cart:cart_detail')
 
-
 @require_POST
+@login_required
 def cart_remove(request, product_id):
     cart = CartModel.get_user_cart(request)
     product = get_object_or_404(Product, id=product_id)
     cart.remove(product)
+    print('call remove')
     return redirect('cart:cart_detail')
-
+@login_required
 def cart_detail(request):
     cart = CartModel.get_user_cart(request)
     for item in cart:
@@ -35,19 +37,6 @@ def cart_detail(request):
         })
     
     return render(request, 'cart/detail.html', {'cart': cart})
-
-# @login_required
-# def cart_detail(request):
-#     cart = CartModel.get_user_cart(request)
-#     for item in cart:
-#         item['quantity_range'] = range(1, 21)
-#         item['update_quantity_form'] = CartAddProductForm(initial={
-#             'quantity': item['quantity'],
-#             'override': True,
-#             'quantity_range': range(1, 21)
-#         })
-#         # item['quantity_range'] = range(1,21)
-#     return render(request, 'cart/detail.html', {'cart': cart})
 
 @require_POST
 @login_required

@@ -27,26 +27,25 @@
                         <td>{{ order.created_at|date:"d/m/Y H:i" }}</td>
                         <td>
                             <div>
-                                {% for item in order.items.all|slice:":2" %}
-                                <small class="d-block">{{ item.product.name }} ({{ item.quantity }})</small>
+                                {% for item in order.items.all %}
+                                <div class="d-flex align-items-center mb-1">
+                                    <small class="me-2">{{ item.product.name }}- Số lượng : {{ item.quantity }}</small>
 
-                                {% if order.status == "delivered" %}
-                                {% if item.product.id in reviewed_product_ids %}
-                                <span class="badge bg-success">Đã đánh giá</span>
-                                {% else %}
-                                <a href="{% url 'products:add_review' item.product.id %}"
-                                    class="btn btn-sm btn-outline-success">
-                                    Đánh giá
-                                </a>
-                                {% endif %}
-                                {% endif %}
-                                </small>
-
+                                    {% if order.status == "delivered" %}
+                                    {% if item.product.id in reviewed_product_ids %}
+                                    <span class="badge bg-success">Đã đánh giá</span>
+                                    {% else %}
+                                    <a href="{% url 'review:add_review' item.product.id %}"
+                                        class="btn btn-sm btn-outline-success">
+                                        Đánh giá
+                                    </a>
+                                    {% endif %}
+                                    {% endif %}
+                                </div>
                                 {% endfor %}
-                                {% if order.items.count > 2 %}
-                                <small class="text-muted">... và {{ order.items.count|add:"-2" }} sản phẩm khác</small>
-                                {% endif %}
                             </div>
+
+
                         </td>
                         <td><strong>{{ order.get_total_cost|floatformat:0 }} VNĐ</strong></td>
                         <td>

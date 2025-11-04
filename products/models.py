@@ -2,7 +2,6 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True, verbose_name="Tên danh mục")
     slug = models.SlugField(max_length=100, unique=True, verbose_name="Slug")
@@ -54,25 +53,4 @@ class Product(models.Model):
         return self.stock > 0
 
 
-class Review(models.Model):
-    RATING_CHOICES = [
-        (1, '1 - Rất tệ'),
-        (2, '2 - Tệ'),
-        (3, '3 - Bình thường'),
-        (4, '4 - Tốt'),
-        (5, '5 - Rất tốt'),
-    ]
-    
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.IntegerField(choices=RATING_CHOICES, verbose_name="Đánh giá")
-    comment = models.TextField(blank=True, verbose_name="Bình luận")
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        unique_together = ('product', 'user')
-        verbose_name = "Đánh giá"
-        verbose_name_plural = "Đánh giá"
-    
-    def __str__(self):
-        return f'{self.product.name} - {self.rating} sao'
+

@@ -181,7 +181,7 @@ def admin_create_staff(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_staff = True  # Đặt là staff
+            user.is_staff = True  
             user.save()
             
             messages.success(request, f'Tạo tài khoản admin {user.username} thành công!')

@@ -110,12 +110,18 @@
                             <td>{{ item.price|floatformat:0 }} VNĐ</td>
                             <td><strong>{{ item.total_price|floatformat:0 }} VNĐ</strong></td>
                             <td>
-                                <button type="button" class="btn btn-sm btn-outline-danger"
-                                    onclick="this.closest('tr').querySelector('select').value='0'; this.closest('form').submit();"
-                                    title="Xóa khỏi giỏ hàng">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <!-- <form action="{% url 'cart:cart_remove' item.product.id %}" method="post"
+                                    class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                        title="Xóa khỏi giỏ hàng">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form> -->
+                                <button type="submit" formaction="{% url 'cart:cart_remove' item.product.id %}"
+                                    class="btn btn-sm btn-outline-danger">Xóa</button>
                             </td>
+
                         </tr>
                         {% endfor %}
                     </tbody>

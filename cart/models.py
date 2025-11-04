@@ -14,7 +14,10 @@ class Cart(models.Model):
         if override_quantity:
             item.quantity = quantity
         else:
-            item.quantity += quantity
+            if item.quantity == 1:
+                item.quantity = quantity
+            else:
+                item.quantity += quantity
         item.save()
 
     def remove(self, product):
