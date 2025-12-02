@@ -12,42 +12,49 @@ def chat_with_store(request):
     user = request.user
     product = None
 
-    product_id = request.POST.get('product_id') or request.GET.get('product_id')
+    # Lấy product_id từ GET parameter (khi click từ trang product)
+    product_id = request.GET.get('product_id')
     if product_id:
         product = get_object_or_404(Product, id=product_id)
 
+    # Lấy hoặc tạo conversation
     conversation = Conversation.objects.filter(sender=user).first()
     if not conversation:
         selected_superuser = choose_superuser()
         conversation = Conversation.objects.create(sender=user, receiver=selected_superuser)
 
+    # Nếu có product_id từ GET (click từ trang product)
+    # → LUÔN gửi product message mỗi lần nhấn
     if product:
-        if not conversation.messages.filter(product=product).exists():
-            Message.objects.create(
-                conversation=conversation,
-                sender=user,
-                product=product
-            )
+        Message.objects.create(
+            conversation=conversation,
+            sender=user,
+            product=product,
+            text=None  # Hoặc có thể thêm text mô tả
+        )
+        # QUAN TRỌNG: Redirect về chat KHÔNG CÓ product_id
+        # Để tránh gửi lại khi refresh hoặc gửi tin nhắn text
+        return redirect('chat:chat_with_store')
 
+    # Xử lý gửi tin nhắn text thông thường (POST)
     if request.method == 'POST':
         text = request.POST.get('text', '').strip()
-        if text or product_id:
+        if text:
             Message.objects.create(
                 conversation=conversation,
                 sender=user,
-                text=text if text else None,
-                product=product
+                text=text,
+                product=None  # Tin nhắn text không kèm product
             )
         return redirect('chat:chat_with_store')
 
-    messages = conversation.messages.select_related("sender").order_by('created_at')
+    # Hiển thị chat
+    messages = conversation.messages.select_related("sender", "product").order_by('created_at')
 
     return render(request, 'chat/chat.html', {
         'conversation': conversation,
         'messages': messages,
-        'product': product
     })
-
 
 
 @admin_required

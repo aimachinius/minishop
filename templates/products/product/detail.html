@@ -93,7 +93,8 @@
             </form>
             {% endif %}
 
-            <a href="{% url 'chat:chat_with_store' %}" class="btn btn-success">
+            <!-- Thay đổi link chat -->
+            <a href="{% url 'chat:chat_with_store' %}?product_id={{ product.id }}" class="btn btn-success">
                 <i class="fas fa-comments"></i> Chat với cửa hàng
             </a>
 
