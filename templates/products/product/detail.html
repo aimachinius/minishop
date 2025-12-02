@@ -76,7 +76,6 @@
                 {% endif %}
             </div>
 
-            <!-- Add to Cart Form -->
             {% if product.is_in_stock %}
             <form action="{% url 'cart:cart_add' product.id %}" method="post" class="mb-4">
                 {% csrf_token %}
@@ -98,13 +97,11 @@
                 <i class="fas fa-comments"></i> Chat với cửa hàng
             </a>
 
-            <!-- Product Description -->
             <div class="description mb-4">
                 <h4>Mô tả sản phẩm</h4>
                 <p>{{ product.description|linebreaks }}</p>
             </div>
 
-            <!-- Product Info -->
             <div class="product-info">
                 <table class="table table-borderless">
                     <tbody>

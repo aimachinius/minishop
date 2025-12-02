@@ -57,7 +57,6 @@ def profile(request):
     })
 
 
-# ======================== ADMIN VIEWS ========================
 
 @admin_required
 def admin_dashboard(request):
@@ -85,7 +84,6 @@ def admin_user_list(request):
         order_count=Count('orders')
     ).order_by('-date_joined')
     
-    # Tìm kiếm
     query = request.GET.get('q')
     if query:
         users = users.filter(
@@ -95,7 +93,6 @@ def admin_user_list(request):
             Q(email__icontains=query)
         )
     
-    # Lọc theo trạng thái
     status = request.GET.get('status')
     if status == 'active':
         users = users.filter(is_active=True)
@@ -104,7 +101,6 @@ def admin_user_list(request):
     elif status == 'admin':
         users = users.filter(Q(is_staff=True) | Q(is_superuser=True))
     
-    # Phân trang
     paginator = Paginator(users, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -127,10 +123,8 @@ def admin_user_detail(request, user_id):
     except Profile.DoesNotExist:
         profile = Profile.objects.create(user=user)
     
-    # Lấy đơn hàng của user
     orders = Order.objects.filter(user=user).order_by('-created_at')
     
-    # Thống kê
     total_orders = orders.count()
     total_spent = sum(order.get_total_cost() for order in orders)
     
@@ -148,12 +142,10 @@ def admin_toggle_user_status(request, user_id):
     """Kích hoạt/vô hiệu hóa tài khoản user"""
     user = get_object_or_404(User, id=user_id)
     
-    # Không cho phép admin tự vô hiệu hóa chính mình
     if user.id == request.user.id:
         messages.error(request, 'Bạn không thể vô hiệu hóa tài khoản của chính mình!')
         return redirect('accounts:admin_user_detail', user_id=user_id)
     
-    # Không cho phép vô hiệu hóa superuser trừ khi là superuser
     if user.is_superuser and not request.user.is_superuser:
         messages.error(request, 'Chỉ superuser mới có thể vô hiệu hóa tài khoản superuser khác!')
         return redirect('accounts:admin_user_detail', user_id=user_id)

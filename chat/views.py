@@ -12,22 +12,15 @@ def chat_with_store(request):
     user = request.user
     product = None
 
-    # Lấy product nếu có
     product_id = request.POST.get('product_id') or request.GET.get('product_id')
     if product_id:
         product = get_object_or_404(Product, id=product_id)
 
-    # Lấy hoặc tạo conversation
-    conversation, created = Conversation.objects.get_or_create(
-        sender=user,
-        defaults={"receiver": None}
-    )
-    
-    # Nếu vừa tạo mới, gọi choose_superuser với conversation object
-    if created:
-        choose_superuser(conversation)
+    conversation = Conversation.objects.filter(sender=user).first()
+    if not conversation:
+        selected_superuser = choose_superuser()
+        conversation = Conversation.objects.create(sender=user, receiver=selected_superuser)
 
-    # Nếu nhấn từ product thì gửi ngay product 1 lần
     if product:
         if not conversation.messages.filter(product=product).exists():
             Message.objects.create(
@@ -36,7 +29,6 @@ def chat_with_store(request):
                 product=product
             )
 
-    # Xử lý gửi tin nhắn
     if request.method == 'POST':
         text = request.POST.get('text', '').strip()
         if text or product_id:
@@ -48,7 +40,6 @@ def chat_with_store(request):
             )
         return redirect('chat:chat_with_store')
 
-    # Load messages đầy đủ 2 chiều
     messages = conversation.messages.select_related("sender").order_by('created_at')
 
     return render(request, 'chat/chat.html', {
@@ -56,6 +47,8 @@ def chat_with_store(request):
         'messages': messages,
         'product': product
     })
+
+
 
 @admin_required
 def admin_chat(request, conversation_id):
@@ -79,28 +72,27 @@ def admin_chat(request, conversation_id):
     })
 
 
-@login_required 
+@login_required
 def user_conversation_list(request):
     user = request.user
     conversations = (
         Conversation.objects.filter(sender=user)
-        .annotate(last_msg=Max('messages__created_at'))  
-        .order_by('-last_msg') 
+        .annotate(last_msg=Max('messages__created_at'))
+        .order_by('-last_msg')
     )
     return render(request, 'chat/user_conversation_list.html', {
         'conversations': conversations
     })
 
+
 @admin_required
 def admin_conversation_list(request):
     admin = request.user
-
     conversations = (
         Conversation.objects.filter(receiver=admin)
         .annotate(last_msg=Max('messages__created_at'))
         .order_by('-last_msg')
     )
-
     return render(request, 'chat/admin_conversation_list.html', {
         'conversations': conversations
     })
