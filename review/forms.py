@@ -13,3 +13,14 @@ class ReviewForm(forms.ModelForm):
             'rating':forms.Select(attrs={'class':'form-select'}),
             'comment': forms.Textarea(attrs={'class':'form-control', 'rows': 4}),
         }
+
+# class ReviewMediaForm(forms.ModelForm):
+#     class Meta:
+#         model = ReviewMedia
+#         fields = ['file']
+#         widgets = {
+#             'file': forms.ClearableFileInput(attrs={
+#                 'multiple': True,
+#                 'accept': 'image/*,video/*'
+#             }),
+#         }

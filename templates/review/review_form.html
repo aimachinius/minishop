@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Đánh giá {{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2>Đánh giá sản phẩm: {{ product.name }}</h2>
+    <form method="post" enctype="multipart/form-data" class="mt-3">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="form-group">
+            <label for="media_files">Thêm hình ảnh hoặc video (tối đa 5 files):</label>
+            <input type="file" name="media_files" id="media_files" class="form-control" multiple
+                accept="image/*,video/*">
+            <small class="form-text text-muted">
+                Hỗ trợ: JPG, PNG, GIF, MP4, AVI, MOV, WEBM (Tối đa 10MB/file)
+            </small>
+        </div>
+
+        <div id="preview-area" class="row mt-3"></div>
+
+        <button type="submit" class="btn btn-success mt-3">
+            <i class="fas fa-check"></i> Gửi đánh giá
+        </button>
+        <a href="{{ product.get_absolute_url }}" class="btn btn-secondary mt-3">Hủy</a>
+    </form>
+</div>
+
+<style>
+    .preview-item {
+        position: relative;
+        margin-bottom: 10px;
+    }
+
+    .preview-item img,
+    .preview-item video {
+        max-width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+
+    .remove-preview {
+        position: absolute;
+        top: 5px;
+        right: 15px;
+        background: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    document.getElementById('media_files').addEventListener('change', function (e) {
+        const previewArea = document.getElementById('preview-area');
+        previewArea.innerHTML = '';
+
+        const files = Array.from(e.target.files);
+        const maxFiles = 5;
+        const maxSize = 10 * 1024 * 1024; // 10MB
+
+        if (files.length > maxFiles) {
+            alert(`Chỉ được chọn tối đa ${maxFiles} files`);
+            e.target.value = '';
+            return;
+        }
+
+        files.forEach((file, index) => {
+            if (file.size > maxSize) {
+                alert(`File ${file.name} quá lớn. Kích thước tối đa 10MB`);
+                return;
+            }
+
+            const reader = new FileReader();
+            const col = document.createElement('div');
+            col.className = 'col-md-3 preview-item';
+
+            reader.onload = function (event) {
+                let mediaElement;
+                if (file.type.startsWith('image/')) {
+                    mediaElement = `<img src="${event.target.result}" alt="Preview">`;
+                } else if (file.type.startsWith('video/')) {
+                    mediaElement = `<video controls><source src="${event.target.result}"></video>`;
+                }
+
+                col.innerHTML = `
+                ${mediaElement}
+                <button type="button" class="remove-preview" onclick="removePreview(this, ${index})">×</button>
+            `;
+                previewArea.appendChild(col);
+            };
+
+            reader.readAsDataURL(file);
+        });
+    });
+
+    function removePreview(button, index) {
+        const input = document.getElementById('media_files');
+        const dt = new DataTransfer();
+        const files = Array.from(input.files);
+
+        files.forEach((file, i) => {
+            if (i !== index) dt.items.add(file);
+        });
+
+        input.files = dt.files;
+        button.closest('.preview-item').remove();
+    }
+</script>
+{% endblock %}
