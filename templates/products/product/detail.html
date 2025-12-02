@@ -18,7 +18,7 @@
             {% endif %}
         </div>
     </div>
-    
+
     <div class="col-md-6">
         <!-- Product Details -->
         <div class="product-details">
@@ -33,43 +33,49 @@
                     <li class="breadcrumb-item active">{{ product.name }}</li>
                 </ol>
             </nav>
-            
+
             <h1 class="mb-3">{{ product.name }}</h1>
-            
+
             <!-- Rating -->
             {% if avg_rating %}
             <div class="mb-3">
                 <div class="rating">
-                    {% for i in "12345" %}
-                        {% if i|add:0 <= avg_rating %}
-                            <i class="fas fa-star"></i>
+                    {% for i in star_range %}
+                    {% if i <= avg_rating %} <i class="fas fa-star"></i>
+
+                        {% elif i == avg_rating_int|add:"1" and avg_rating > avg_rating_int %}
+                        <i class="fas fa-star-half-alt"></i>
+
                         {% else %}
-                            <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
                         {% endif %}
-                    {% endfor %}
+                        {% endfor %}
                 </div>
+                <span class="rating-text">
+                    {{ avg_rating|floatformat:1 }}
+                </span>
                 <small class="text-muted">({{ reviews.count }} đánh giá)</small>
             </div>
             {% endif %}
-            
+
             <div class="price-section mb-4">
                 <h2 class="price mb-0">{{ product.price|floatformat:0 }} VNĐ</h2>
             </div>
-            
+
             <div class="stock-status mb-4">
                 {% if product.is_in_stock %}
                 <p class="text-success">
-                    <i class="fas fa-check-circle"></i> 
+                    <i class="fas fa-check-circle"></i>
                     Còn {{ product.stock }} sản phẩm
                 </p>
                 {% else %}
                 <p class="text-danger">
-                    <i class="fas fa-times-circle"></i> 
+                    <i class="fas fa-times-circle"></i>
                     Hết hàng
                 </p>
                 {% endif %}
             </div>
-            
+
             <!-- Add to Cart Form -->
             {% if product.is_in_stock %}
             <form action="{% url 'cart:cart_add' product.id %}" method="post" class="mb-4">
@@ -87,13 +93,17 @@
                 </div>
             </form>
             {% endif %}
-            
+
+            <a href="{% url 'chat:chat_with_store' %}" class="btn btn-success">
+                <i class="fas fa-comments"></i> Chat với cửa hàng
+            </a>
+
             <!-- Product Description -->
             <div class="description mb-4">
                 <h4>Mô tả sản phẩm</h4>
                 <p>{{ product.description|linebreaks }}</p>
             </div>
-            
+
             <!-- Product Info -->
             <div class="product-info">
                 <table class="table table-borderless">
@@ -112,9 +122,9 @@
                             <td><strong>Tình trạng:</strong></td>
                             <td>
                                 {% if product.is_in_stock %}
-                                    <span class="badge bg-success">Còn hàng</span>
+                                <span class="badge bg-success">Còn hàng</span>
                                 {% else %}
-                                    <span class="badge bg-danger">Hết hàng</span>
+                                <span class="badge bg-danger">Hết hàng</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -136,14 +146,16 @@
                 <div class="card product-card h-100">
                     <a href="{{ related_product.get_absolute_url }}" class="text-decoration-none">
                         {% if related_product.image %}
-                        <img src="{{ related_product.image.url }}" class="card-img-top product-image" alt="{{ related_product.name }}">
+                        <img src="{{ related_product.image.url }}" class="card-img-top product-image"
+                            alt="{{ related_product.name }}">
                         {% else %}
-                        <div class="card-img-top product-image bg-light d-flex align-items-center justify-content-center">
+                        <div
+                            class="card-img-top product-image bg-light d-flex align-items-center justify-content-center">
                             <i class="fas fa-image fa-2x text-muted"></i>
                         </div>
                         {% endif %}
                     </a>
-                    
+
                     <div class="card-body">
                         <h6 class="card-title">
                             <a href="{{ related_product.get_absolute_url }}" class="text-decoration-none text-dark">
@@ -167,7 +179,7 @@
 <div class="row mt-5">
     <div class="col-12">
         <h3>Đánh giá sản phẩm</h3>
-        
+
         {% if reviews %}
         <div class="reviews-section">
             {% for review in reviews %}
@@ -177,12 +189,11 @@
                         <strong>{{ review.user.first_name|default:review.user.username }}</strong>
                         <div class="rating">
                             {% for i in "12345" %}
-                                {% if i|add:0 <= review.rating %}
-                                    <i class="fas fa-star text-warning"></i>
+                            {% if i|add:0 <= review.rating %} <i class="fas fa-star text-warning"></i>
                                 {% else %}
-                                    <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
                                 {% endif %}
-                            {% endfor %}
+                                {% endfor %}
                         </div>
                     </div>
                     <small class="text-muted">{{ review.created_at|date:"d/m/Y H:i" }}</small>

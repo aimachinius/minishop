@@ -11,8 +11,6 @@ from .models import Profile
 from .forms import UserProfileForm
 from .decorators import admin_required, superuser_required
 from orders.models import Order
-
-
 class CustomLogoutView(LogoutView):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -182,6 +180,7 @@ def admin_create_staff(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.is_staff = True  
+            user.is_superuser = True
             user.save()
             
             messages.success(request, f'Tạo tài khoản admin {user.username} thành công!')

@@ -61,6 +61,18 @@
                         </button>
                     </div>
                 </form>
+                {% if user.is_authenticated and not user.is_staff and not user.is_superuser %}
+                <a href="{% url 'chat:user_conversation_list' %}" class="btn btn-success">
+                    <i class="fas fa-comments"></i> Xem tin nhắn
+                </a>
+                {% endif %}
+
+                {% if user.is_authenticated and user.is_staff %}
+                <a href="{% url 'chat:admin_conversation_list' %}" class="btn btn-warning">
+                    <i class="fas fa-shield-alt"></i> Danh sách chat
+                </a>
+                {% endif %}
+
 
                 <ul class="navbar-nav">
                     <!-- Cart -->

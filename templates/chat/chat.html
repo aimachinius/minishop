@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat với cửa hàng{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h3>Chat với cửa hàng</h3>
+    <hr>
+
+    <div class="card shadow">
+        <div class="card-body" id="chat-box" style="height: 400px; overflow-y: auto;">
+            {% for msg in messages %}
+            {% if msg.sender == user %}
+            <!-- Tin nhắn của user - bên phải -->
+            <div class="mb-3 d-flex justify-content-end">
+                <div
+                    style="max-width: 70%; background-color: #007bff; color: white; padding: 10px 15px; border-radius: 15px;">
+                    {% if msg.text %}
+                    <p class="mb-0">{{ msg.text }}</p>
+                    {% endif %}
+
+                    {% if msg.product %}
+                    <div class="card mt-2" style="width: 150px;">
+                        <img src="{{ msg.product.image.url }}" class="card-img-top">
+                        <div class="card-body p-2">
+                            <p class="mb-1" style="font-size: 12px;">{{ msg.product.name }}</p>
+                            <a href="{{ msg.product.get_absolute_url }}" class="btn btn-sm btn-light">Xem</a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <small style="opacity: 0.7;">{{ msg.created_at|date:'H:i' }}</small>
+                </div>
+            </div>
+            {% else %}
+            <!-- Tin nhắn từ admin - bên trái -->
+            <div class="mb-3 d-flex justify-content-start">
+                <div
+                    style="max-width: 70%; background-color: #e9ecef; color: black; padding: 10px 15px; border-radius: 15px;">
+                    <strong style="font-size: 12px;">{{ msg.sender.username }}</strong>
+                    {% if msg.text %}
+                    <p class="mb-0">{{ msg.text }}</p>
+                    {% endif %}
+
+                    {% if msg.product %}
+                    <div class="card mt-2" style="width: 150px;">
+                        <img src="{{ msg.product.image.url }}" class="card-img-top">
+                        <div class="card-body p-2">
+                            <p class="mb-1" style="font-size: 12px;">{{ msg.product.name }}</p>
+                            <a href="{{ msg.product.get_absolute_url }}" class="btn btn-sm btn-primary">Xem</a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <small style="opacity: 0.7;">{{ msg.created_at|date:'H:i' }}</small>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="card-footer">
+            <form method="post">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" name="text" class="form-control" placeholder="Nhập tin nhắn...">
+                    <button class="btn btn-primary" type="submit">Gửi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.getElementById("chat-box").scrollTop = document.getElementById("chat-box").scrollHeight;
+</script>
+{% endblock %}

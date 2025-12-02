@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Order, OrderItem
-
+# from django.shortcuts import redirect
+# from django.urls import reverse
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
@@ -37,4 +38,3 @@ class OrderAdmin(admin.ModelAdmin):
         return []  # khi tạo mới, tất cả editable
     def has_delete_permission(self, request, obj=None):
         return False
-    

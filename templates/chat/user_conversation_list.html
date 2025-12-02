@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Tin nhắn của bạn{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Tin nhắn của tôi</h3>
+    <hr>
+
+    {% for c in conversations %}
+    <a href="{% url 'chat:chat_with_store' %}" class="text-decoration-none text-dark">
+        <div class="card mb-2 shadow-sm p-3">
+            <strong>Chat với Admin</strong><br>
+            <small>{{ c.last_msg|date:"H:i d/m/Y" }}</small>
+        </div>
+    </a>
+    {% empty %}
+    <p>Bạn chưa có cuộc trò chuyện nào.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Tin nhắn khách hàng{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Danh sách hội thoại</h3>
+    <hr>
+
+    {% for c in conversations %}
+    <a href="{% url 'chat:admin_chat' c.id %}" class="text-decoration-none text-dark">
+        <div class="card mb-2 shadow-sm p-3">
+            <strong>Khách: {{ c.sender.username }}</strong><br>
+            <small>Tin cuối: {{ c.last_msg|date:"H:i d/m/Y" }}</small>
+        </div>
+    </a>
+    {% empty %}
+    <p>Không có cuộc hội thoại nào.</p>
+    {% endfor %}
+</div>
+{% endblock %}

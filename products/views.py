@@ -51,10 +51,13 @@ def product_detail(request, id, slug):
     product = get_object_or_404(Product, id=id, slug=slug, available=True)
     cart_product_form = CartAddProductForm()
     
-    # Get reviews and average rating
     reviews = product.reviews.all().order_by('-created_at')
-    avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']
     
+    avg_rating = reviews.aggregate(Avg('rating'))['rating__avg'] or 0
+    avg_rating_int = int(avg_rating)  
+
+    star_range = range(1, 6)
+
     # Related products
     related_products = Product.objects.filter(
         category=product.category,
@@ -66,5 +69,7 @@ def product_detail(request, id, slug):
         'cart_product_form': cart_product_form,
         'reviews': reviews,
         'avg_rating': avg_rating,
+        'avg_rating_int': avg_rating_int,
+        'star_range': star_range,
         'related_products': related_products,
     })
