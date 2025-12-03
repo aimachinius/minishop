@@ -59,10 +59,10 @@
         </div>
 
         <div class="card-footer">
-            <form method="post">
+            <form method="post" id="msg_form">
                 {% csrf_token %}
                 <div class="input-group">
-                    <input type="text" name="text" class="form-control" placeholder="Nhập tin nhắn...">
+                    <input type="text" id="msg_input" name="text" class="form-control" placeholder="Nhập tin nhắn...">
                     <button class="btn btn-primary" type="submit">Gửi</button>
                 </div>
             </form>
@@ -74,4 +74,60 @@
 <script>
     document.getElementById("chat-box").scrollTop = document.getElementById("chat-box").scrollHeight;
 </script>
+
+<script>
+    const conversationId = Number("{{ conversation.id }}");
+    const senderId = Number("{{ user.id }}");
+    const chatBox = document.getElementById("chat-box");
+
+    const chatSocket = new WebSocket(
+        "ws://" + window.location.host + "/ws/chat/" + conversationId + "/"
+    );
+
+    chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        const div = document.createElement("div");
+
+        div.classList.add("mb-3");
+
+        if (data.sender_id === senderId) {
+            div.classList.add("d-flex", "justify-content-end");
+            div.innerHTML = `
+                <div style="max-width:70%;background-color:#007bff;color:white;padding:10px 15px;border-radius:15px;">
+                    <p class="mb-0">${data.message}</p>
+                    <small style="opacity:0.7;">${data.created_at}</small>
+
+                </div>`;
+        } else {
+            div.classList.add("d-flex", "justify-content-start");
+            div.innerHTML = `
+                <div style="max-width:70%;background-color:#e9ecef;color:black;padding:10px 15px;border-radius:15px;">
+                    <strong style="font-size:12px;">Cửa hàng</strong>
+                    <p class="mb-0">${data.message}</p>
+                    <small style="opacity:0.7;">${data.created_at}</small>
+
+                </div>`;
+        }
+
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    };
+
+    document.getElementById("msg_form").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const input = document.getElementById("msg_input");
+        const message = input.value.trim();
+        if (!message) return;
+
+        chatSocket.send(JSON.stringify({
+            message: message,
+            sender_id: senderId
+        }));
+
+        input.value = "";
+    });
+</script>
+
+
 {% endblock %}

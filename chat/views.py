@@ -1,3 +1,4 @@
+from time import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from accounts.decorators import admin_required
@@ -5,10 +6,12 @@ from products.models import Product
 from .models import Conversation, Message
 from .utils import choose_superuser
 from django.db.models import Max
-
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 @login_required
 def chat_with_store(request):
+    print("chat with store view called")
     user = request.user
     product = None
 
@@ -32,8 +35,22 @@ def chat_with_store(request):
             product=product,
             text=None  # Hoặc có thể thêm text mô tả
         )
-        # QUAN TRỌNG: Redirect về chat KHÔNG CÓ product_id
-        # Để tránh gửi lại khi refresh hoặc gửi tin nhắn text
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'chat_{conversation.id}',
+            {
+                'type': 'chat_product',
+                'product': {
+                    'id': product.id,
+                    'name': product.name,
+                    'image': product.image.url if product.image else None,
+                    'slug': product.slug,
+                    'created_at' : timezone.now().strftime('%H:%M'),
+                },
+                'sender_id': user.id,
+                'sender_username': user.username
+            }
+        )
         return redirect('chat:chat_with_store')
 
     # Xử lý gửi tin nhắn text thông thường (POST)
@@ -44,11 +61,10 @@ def chat_with_store(request):
                 conversation=conversation,
                 sender=user,
                 text=text,
-                product=None  # Tin nhắn text không kèm product
+                product=None  
             )
         return redirect('chat:chat_with_store')
 
-    # Hiển thị chat
     messages = conversation.messages.select_related("sender", "product").order_by('created_at')
 
     return render(request, 'chat/chat.html', {
@@ -59,24 +75,32 @@ def chat_with_store(request):
 
 @admin_required
 def admin_chat(request, conversation_id):
-    conversation = get_object_or_404(Conversation, id=conversation_id, receiver=request.user)
-
-    if request.method == 'POST':
-        text = request.POST.get('text', '').strip()
-        if text:
-            Message.objects.create(
-                conversation=conversation,
-                sender=request.user,
-                text=text
-            )
-        return redirect('chat:admin_chat', conversation_id=conversation.id)
-
-    messages = conversation.messages.select_related("sender").order_by('created_at')
-
+    print("chat with admin view called")
+    conversation = get_object_or_404(Conversation, id=conversation_id)
+    msgs = Message.objects.filter(conversation=conversation).order_by('created_at')
+    
     return render(request, 'chat/admin_chat.html', {
         'conversation': conversation,
-        'messages': messages
+        'messages': msgs
     })
+    # conversation = get_object_or_404(Conversation, id=conversation_id, receiver=request.user)
+
+    # if request.method == 'POST':
+    #     text = request.POST.get('text', '').strip()
+    #     if text:
+    #         Message.objects.create(
+    #             conversation=conversation,
+    #             sender=request.user,
+    #             text=text
+    #         )
+    #     return redirect('chat:admin_chat', conversation_id=conversation.id)
+
+    # messages = conversation.messages.select_related("sender").order_by('created_at')
+
+    # return render(request, 'chat/admin_chat.html', {
+    #     'conversation': conversation,
+    #     'messages': messages
+    # })
 
 
 @login_required

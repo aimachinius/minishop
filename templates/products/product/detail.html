@@ -197,6 +197,33 @@
                     <small class="text-muted">{{ review.created_at|date:"d/m/Y H:i" }}</small>
                 </div>
                 <p class="mt-2">{{ review.comment }}</p>
+
+                {% comment %} Hiển thị media (ảnh / video) nếu có {% endcomment %}
+                {% if review.media_files.all %}
+                <div class="review-media d-flex flex-wrap gap-2 mt-2">
+                    {% for media in review.media_files.all %}
+                    {% if media.media_type == 'image' %}
+                    <div class="review-media-item">
+                        <img src="{{ media.file.url }}" alt="Hình đánh giá" class="img-fluid rounded"
+                            style="max-width:150px; max-height:150px; object-fit:cover;">
+                    </div>
+                    {% elif media.media_type == 'video' %}
+                    <div class="review-media-item">
+                        <video controls style="max-width:300px; max-height:200px;">
+                            <source src="{{ media.file.url }}">
+                            Trình duyệt của bạn không hỗ trợ thẻ video.
+                        </video>
+                    </div>
+                    {% else %}
+                    <!-- Nếu không có media_type rõ ràng, thử hiển thị như image -->
+                    <div class="review-media-item">
+                        <img src="{{ media.file.url }}" alt="Media đánh giá" class="img-fluid rounded"
+                            style="max-width:150px; max-height:150px; object-fit:cover;">
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
             {% endfor %}
         </div>

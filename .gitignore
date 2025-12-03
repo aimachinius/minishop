@@ -24,10 +24,12 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-
+project/
 # Django
 *.log
 local_settings.py
+
+staticfiles/
 
 # Chỉ ignore một số thư mục con trong media, giữ lại ảnh sản phẩm
 # Media cho ảnh người dùng tải lên trong quá trình test

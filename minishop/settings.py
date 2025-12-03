@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'cart',
     'review',
     'chat',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'minishop.urls'
@@ -76,7 +78,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'minishop.wsgi.application'
+# WSGI_APPLICATION = 'minishop.wsgi.application'
+ASGI_APPLICATION = 'minishop.asgi.application'
+
 
 
 # Database
@@ -116,18 +120,25 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}   
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'vi-VN'
 
-TIME_ZONE = 'Asia/Ho_Chi_Minh'
+
 
 USE_I18N = True
 
 USE_TZ = True
-
+TIME_ZONE = 'Asia/Ho_Chi_Minh'
 # Đảm bảo serializer sử dụng UTF-8
 SERIALIZATION_MODULES = {
     'json': 'django.core.serializers.json',
@@ -140,6 +151,9 @@ SERIALIZATION_MODULES = {
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Media files (User uploaded files)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

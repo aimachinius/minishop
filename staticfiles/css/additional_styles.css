@@ -1,0 +1,170 @@
+/* Additional styles to add to style.css */
+
+/* Sidebar */
+.list-group-item {
+    border: none;
+    padding: 12px 20px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.list-group-item:hover {
+    background-color: rgba(67, 97, 238, 0.05);
+}
+
+.list-group-item.active {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Cart Styling */
+.cart-item {
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+    transition: var(--transition);
+}
+
+.cart-item:hover {
+    box-shadow: var(--box-shadow);
+}
+
+/* Admin Dashboard */
+.stats-card {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow);
+}
+
+.stats-card i {
+    opacity: 0.8;
+    transition: var(--transition);
+}
+
+.stats-card:hover i {
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+/* Pagination */
+.pagination {
+    margin-top: 20px;
+}
+
+.pagination .page-item .page-link {
+    border: none;
+    color: var(--primary);
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    margin: 0 3px;
+    transition: var(--transition);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary);
+    color: white;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: rgba(67, 97, 238, 0.1);
+}
+
+/* Alerts */
+.alert {
+    border-radius: var(--border-radius);
+    border: none;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.alert-success {
+    background-color: rgba(46, 204, 113, 0.1);
+    color: var(--success);
+}
+
+.alert-danger {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: var(--danger);
+}
+
+.alert-warning {
+    background-color: rgba(243, 156, 18, 0.1);
+    color: var(--warning);
+}
+
+.alert-info {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: var(--info);
+}
+
+/* Footer */
+footer {
+    background-image: linear-gradient(135deg, #253D5B 0%, #162A43 100%) !important;
+    color: white;
+    padding: 40px 0 20px;
+    margin-top: 60px;
+}
+
+footer h5 {
+    font-weight: 700;
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+}
+
+footer h5:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    height: 3px;
+    width: 40px;
+    background-color: var(--secondary);
+    border-radius: 2px;
+}
+
+footer p {
+    opacity: 0.8;
+}
+
+footer hr {
+    opacity: 0.1;
+    margin: 30px 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767px) {
+    .hero-section {
+        padding: 60px 0;
+    }
+    
+    .product-card {
+        margin-bottom: 20px;
+    }
+    
+    .cart-item-image {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* Search Box Enhancement */
+.navbar .input-group .form-control {
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+    border: none;
+    padding-left: 15px;
+}
+
+.navbar .input-group .btn {
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    border: none;
+    background-color: var(--secondary);
+    color: white;
+}
+
+.navbar .input-group .btn:hover {
+    background-color: #e56f3c;
+}

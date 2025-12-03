@@ -27,8 +27,9 @@ urlpatterns = [
     path('', include('products.urls')),
     path('review/', include('review.urls')),
     path('chat/', include('chat.urls')),
+    path('products/', include('products.urls', namespace='products')),
+
 ]
 
-# Serve media files in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
