@@ -21,7 +21,11 @@ python manage.py loaddata fixtures/data.json
 
 5. Chạy development server:
 ```bash
-python manage.py runserver
+pip install whitenoise
+python manage.py collectstatic
+
+daphne -p 8000 minishop.asgi:application
+
 ```
 
 6. Truy cập: http://127.0.0.1:8000/
