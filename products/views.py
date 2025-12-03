@@ -51,12 +51,16 @@ def product_detail(request, id, slug):
     product = get_object_or_404(Product, id=id, slug=slug, available=True)
     cart_product_form = CartAddProductForm()
     
-    reviews = product.reviews.all().order_by('-created_at')
+    reviews_list = product.reviews.all().order_by('-created_at')
     
-    avg_rating = reviews.aggregate(Avg('rating'))['rating__avg'] or 0
+    avg_rating = reviews_list.aggregate(Avg('rating'))['rating__avg'] or 0
     avg_rating_int = int(avg_rating)  
 
     star_range = range(1, 6)
+
+    paginator = Paginator(reviews_list,5)
+    page_number = request.GET.get('page')
+    reviews_page_obj = paginator.get_page(page_number)
 
     # Related products
     related_products = Product.objects.filter(
@@ -67,7 +71,8 @@ def product_detail(request, id, slug):
     return render(request, 'products/product/detail.html', {
         'product': product,
         'cart_product_form': cart_product_form,
-        'reviews': reviews,
+        'reviews': reviews_page_obj.object_list,
+        'reviews_page_obj': reviews_page_obj,
         'avg_rating': avg_rating,
         'avg_rating_int': avg_rating_int,
         'star_range': star_range,

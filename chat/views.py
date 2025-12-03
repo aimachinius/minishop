@@ -1,4 +1,3 @@
-from time import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from accounts.decorators import admin_required
@@ -45,7 +44,6 @@ def chat_with_store(request):
                     'name': product.name,
                     'image': product.image.url if product.image else None,
                     'slug': product.slug,
-                    'created_at' : timezone.now().strftime('%H:%M'),
                 },
                 'sender_id': user.id,
                 'sender_username': user.username

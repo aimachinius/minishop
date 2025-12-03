@@ -42,10 +42,8 @@
                 <div class="rating">
                     {% for i in star_range %}
                     {% if i <= avg_rating %} <i class="fas fa-star"></i>
-
                         {% elif i == avg_rating_int|add:"1" and avg_rating > avg_rating_int %}
                         <i class="fas fa-star-half-alt"></i>
-
                         {% else %}
                         <i class="far fa-star"></i>
                         {% endif %}
@@ -54,7 +52,7 @@
                 <span class="rating-text">
                     {{ avg_rating|floatformat:1 }}
                 </span>
-                <small class="text-muted">({{ reviews.count }} đánh giá)</small>
+                <small class="text-muted">({{ reviews_page_obj.paginator.count }} đánh giá)</small>
             </div>
             {% endif %}
 
@@ -93,10 +91,11 @@
             </form>
             {% endif %}
 
-            <!-- Thay đổi link chat -->
-            <a href="{% url 'chat:chat_with_store' %}?product_id={{ product.id }}" class="btn btn-success">
+            {% if request.user.is_authenticated and not request.user.is_staff and not request.user.is_superuser %}
+            <a href="{% url 'chat:chat_with_store' %}?product_id={{ product.id }}" class="btn btn-success mb-3">
                 <i class="fas fa-comments"></i> Chat với cửa hàng
             </a>
+            {% endif %}
 
             <div class="description mb-4">
                 <h4>Mô tả sản phẩm</h4>
@@ -174,9 +173,9 @@
 {% endif %}
 
 <!-- Reviews Section -->
-<div class="row mt-5">
+<div class="row mt-5" id="reviews">
     <div class="col-12">
-        <h3>Đánh giá sản phẩm</h3>
+        <h3>Đánh giá sản phẩm ({{ reviews_page_obj.paginator.count }})</h3>
 
         {% if reviews %}
         <div class="reviews-section">
@@ -227,6 +226,51 @@
             </div>
             {% endfor %}
         </div>
+
+        <!-- Pagination -->
+        {% if reviews_page_obj.has_other_pages %}
+        <div class="pagination-wrapper mt-4">
+            <nav aria-label="Phân trang đánh giá">
+                <ul class="pagination justify-content-center">
+                    {% if reviews_page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1#reviews">Đầu</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ reviews_page_obj.previous_page_number }}#reviews">Trước</a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in reviews_page_obj.paginator.page_range %}
+                    {% if reviews_page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > reviews_page_obj.number|add:'-3' and num < reviews_page_obj.number|add:'3' %} <li
+                        class="page-item">
+                        <a class="page-link" href="?page={{ num }}#reviews">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if reviews_page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ reviews_page_obj.next_page_number }}#reviews">Sau</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?page={{ reviews_page_obj.paginator.num_pages }}#reviews">Cuối</a>
+                        </li>
+                        {% endif %}
+                </ul>
+            </nav>
+
+            <p class="text-center text-muted mt-2">
+                Trang {{ reviews_page_obj.number }} / {{ reviews_page_obj.paginator.num_pages }}
+            </p>
+        </div>
+        {% endif %}
+
         {% else %}
         <p class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</p>
         {% endif %}
