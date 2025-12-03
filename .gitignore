@@ -35,6 +35,7 @@ staticfiles/
 # Media cho ảnh người dùng tải lên trong quá trình test
 media/avatars/
 media/temp/
+media/ 
 # Nhưng giữ lại ảnh sản phẩm
 !media/products/
 
